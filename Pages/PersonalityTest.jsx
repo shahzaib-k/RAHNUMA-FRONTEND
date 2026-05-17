@@ -57,7 +57,7 @@ const PersonalityTest = () => {
         try {
           const u = JSON.parse(userStr);
           userId = u.id || u._id || null;
-        } catch(e) {}
+        } catch (e) { }
       }
       if (!userId || userId === "guest_unknown") {
         userId = localStorage.getItem('guestId');
@@ -66,7 +66,7 @@ const PersonalityTest = () => {
           localStorage.setItem('guestId', userId);
         }
       }
-      
+
       const res = await fetch("http://localhost:5000/api/personality/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -100,7 +100,7 @@ const PersonalityTest = () => {
       <div className="min-h-screen bg-[#1a0b2e] bg-gradient-to-br from-[#1a0b2e] via-[#2d0b5a] to-[#0f051d] flex flex-col items-center justify-center p-6 text-white font-sans">
         <div className="bg-[#ffffff0a] border border-[#ffffff15] backdrop-blur-lg rounded-3xl p-8 md:p-10 max-w-2xl w-full text-center shadow-2xl">
           <h1 className="text-3xl font-bold mb-8">Your OCEAN Profile</h1>
-          
+
           <div className="space-y-6 mb-10 w-full md:px-4">
             {traits.map(trait => (
               <div key={trait.key} className="text-left">
@@ -109,8 +109,8 @@ const PersonalityTest = () => {
                   <span className="text-[#a855f7] font-bold">{results[trait.key]}%</span>
                 </div>
                 <div className="w-full bg-[#ffffff10] rounded-full h-3 break-inside-avoid">
-                  <div 
-                    className="bg-[#a855f7] h-3 rounded-full transition-all duration-1000 ease-out" 
+                  <div
+                    className="bg-[#a855f7] h-3 rounded-full transition-all duration-1000 ease-out"
                     style={{ width: `${results[trait.key]}%` }}
                   ></div>
                 </div>
@@ -118,7 +118,7 @@ const PersonalityTest = () => {
             ))}
           </div>
 
-          <button 
+          <button
             onClick={() => navigate('/assessments')}
             className="w-full py-4 rounded-xl font-semibold text-lg bg-[#a855f7] hover:opacity-90 transition-all shadow-lg active:scale-95"
           >
@@ -130,7 +130,7 @@ const PersonalityTest = () => {
   }
 
   const currentQ = questions[currentIndex];
-  
+
   const options = [
     { value: 1, label: "Strongly Disagree" },
     { value: 2, label: "Disagree" },
@@ -161,10 +161,10 @@ const PersonalityTest = () => {
         {currentQ && (
           <div className="bg-[#ffffff0a] border border-[#ffffff15] backdrop-blur-lg rounded-3xl p-6 md:p-10 shadow-2xl">
             <h2 className="text-xl md:text-2xl font-semibold mb-10 leading-relaxed text-center">{currentQ.question}</h2>
-            
+
             <div className="flex flex-col space-y-3">
               {options.map((option) => (
-                <div 
+                <div
                   key={option.value}
                   onClick={() => handleOptionSelect(option.value)}
                   className={`p-4 md:p-5 rounded-xl border cursor-pointer transition-all ${currentAnswerValue === option.value ? 'bg-[#a855f7] border-[#a855f7] text-white shadow-lg shadow-[#a855f7]/20 flex justify-center text-center' : 'bg-[#ffffff05] border-[#ffffff1a] hover:bg-[#ffffff10] text-gray-300 flex justify-center text-center'}`}
@@ -175,7 +175,7 @@ const PersonalityTest = () => {
             </div>
 
             <div className="mt-12 flex flex-col sm:flex-row justify-between gap-4">
-              <button 
+              <button
                 onClick={handlePrevious}
                 disabled={currentIndex === 0}
                 className={`flex-1 py-4 rounded-xl font-semibold text-lg transition-all ${currentIndex === 0 ? 'opacity-50 cursor-not-allowed bg-[#ffffff10] text-gray-500' : 'bg-[#ffffff15] hover:bg-[#ffffff25] text-white'}`}
@@ -184,14 +184,15 @@ const PersonalityTest = () => {
               </button>
 
               {currentIndex < questions.length - 1 ? (
-                <button 
+                <button
                   onClick={handleNext}
-                  className="flex-1 py-4 rounded-xl font-semibold text-lg bg-[#a855f7] hover:opacity-90 transition-all shadow-lg active:scale-95"
+                  disabled={!currentAnswerValue}
+                  className={` flex-1 py-4 rounded-xl font-semibold text-lg transition-all shadow-lg ${!currentAnswerValue ? 'opacity-50 cursor-not-allowed bg-[#ffffff10] text-gray-500' : 'bg-[#a855f7] hover:opacity-90 active:scale-95 text-white'}`}
                 >
                   Next
                 </button>
               ) : (
-                <button 
+                <button
                   onClick={handleSubmit}
                   disabled={answers.length < questions.length && questions.length > 0}
                   className={`flex-1 py-4 rounded-xl font-semibold text-lg transition-all shadow-lg ${answers.length < questions.length && questions.length > 0 ? 'opacity-50 cursor-not-allowed bg-[#ffffff10] text-gray-500' : 'bg-[#10b981] hover:bg-[#059669] text-white active:scale-95'}`}

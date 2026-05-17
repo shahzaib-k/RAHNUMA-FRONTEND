@@ -55,8 +55,8 @@ const Assesments = () => {
         {/* Assessment Cards Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {assessmentData.map((item, index) => (
-            <div 
-              key={index} 
+            <div
+              key={index}
               className="bg-[#ffffff0a] border border-[#ffffff15] backdrop-blur-lg rounded-3xl p-8 md:p-10 flex flex-col h-full shadow-2xl transition-transform hover:scale-[1.01]"
             >
               {/* Icon Container */}
@@ -81,9 +81,9 @@ const Assesments = () => {
               </ul>
 
               {/* Action Button */}
-              <button 
+              <button
                 onClick={() => navigate(item.route)}
-                className={`w-full py-4 rounded-xl font-semibold text-lg ${item.buttonColor} hover:opacity-90 transition-all shadow-lg active:scale-95`}
+                className={`cursor-pointer w-full py-4 rounded-xl font-semibold text-lg ${item.buttonColor} hover:opacity-90 transition-all shadow-lg active:scale-95`}
               >
                 {item.buttonText}
               </button>

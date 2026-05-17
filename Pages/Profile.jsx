@@ -9,22 +9,64 @@ const Profile = () => {
   const [atsScore, setAtsScore] = useState("--");
   const [atsFeedback, setAtsFeedback] = useState(null);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [testsCompleted, setTestsCompleted] = useState("0/2");
+  const [careerMatch, setCareerMatch] = useState("--");
+  const [isLoadingDashboard, setIsLoadingDashboard] = useState(true);
+  const [isLoadingAts, setIsLoadingAts] = useState(true);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
+    let userId = null;
     if (storedUser) {
       try {
-        setUser(JSON.parse(storedUser));
+        const parsed = JSON.parse(storedUser);
+        setUser(parsed);
+        userId = parsed.id || parsed._id;
       } catch (e) {
         console.error("Failed to parse user data", e);
       }
     }
 
+    const fetchDashboardData = async () => {
+      try {
+        const token = Cookies.get('token');
+        if (!token || !userId) {
+          setIsLoadingDashboard(false);
+          return;
+        }
+
+        const res = await fetch(`/api/dashboard/intelligence/${userId}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        const data = await res.json();
+        
+        if (res.ok) {
+           setTestsCompleted("2/2");
+           if (data.careerRecommendations && data.careerRecommendations.length > 0) {
+             const topMatch = data.careerRecommendations[0].confidenceScore || data.careerRecommendations[0].score;
+             if (topMatch) setCareerMatch(typeof topMatch === 'number' ? Math.round(topMatch) + "%" : topMatch + "%");
+           }
+        } else if (res.status === 404 && data.testsCompleted !== undefined) {
+           setTestsCompleted(`${data.testsCompleted}/2`);
+        }
+      } catch (error) {
+        console.error("Error loading dashboard data:", error);
+      } finally {
+        setIsLoadingDashboard(false);
+      }
+    };
+
+    fetchDashboardData();
+
     // Fetch dynamic ATS Score securely across workflow constraint #6
     const fetchAtsData = async () => {
       try {
         const token = Cookies.get('token');
-        if (!token) return;
+        if (!token) {
+          setIsLoadingAts(false);
+          return;
+        }
 
         const res = await fetch('/api/ats/ats-score', {
           headers: {
@@ -41,6 +83,8 @@ const Profile = () => {
         }
       } catch (error) {
         console.error("Error loading latest ATS data:", error);
+      } finally {
+        setIsLoadingAts(false);
       }
     };
 
@@ -61,24 +105,31 @@ const Profile = () => {
   const stats = [
     {
       title: "Tests Completed",
-      subtitle: "All assessments done",
-      value: "2/2",
+      subtitle: isLoadingDashboard ? "Loading status..." : testsCompleted === "2/2" 
+        ? "All assessments completed!" 
+        : testsCompleted === "1/2" 
+        ? "Only 1 assessment remaining" 
+        : "Ready to start your journey?",
+      value: testsCompleted,
+      isSkeleton: isLoadingDashboard,
       icon: (
         <Brain className="w-8 h-8 text-blue-400" />
       ),
     },
     {
       title: "Career Match",
-      subtitle: "Average confidence",
-      value: "78%",
+      subtitle: isLoadingDashboard ? "Loading match..." : careerMatch !== "--" ? "Top career confidence" : "Pending tests",
+      value: careerMatch,
+      isSkeleton: isLoadingDashboard,
       icon: (
         <Target className="w-8 h-8 text-purple-400" />
       ),
     },
     {
       title: "ATS Score",
-      subtitle: atsFeedback?.summary ? "Last result overview" : "Resume optimization",
+      subtitle: isLoadingAts ? "Loading score..." : atsFeedback?.summary ? "Last result overview" : "Resume optimization",
       value: atsScore,
+      isSkeleton: isLoadingAts,
       icon: (
         <FileText className="w-8 h-8 text-pink-400" />
       ),
@@ -108,7 +159,11 @@ const Profile = () => {
               <h3 className="text-lg font-semibold">{stat.title}</h3>
               <p className="text-xs text-gray-400" title={atsFeedback?.summary}>{stat.subtitle}</p>
             </div>
-            <span className="text-3xl font-bold">{stat.value}</span>
+            {stat.isSkeleton ? (
+              <div className="h-8 w-16 bg-white/10 rounded animate-pulse mt-1"></div>
+            ) : (
+              <span className="text-3xl font-bold">{stat.value}</span>
+            )}
           </div>
         ))}
       </div>

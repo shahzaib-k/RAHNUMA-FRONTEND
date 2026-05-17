@@ -57,7 +57,7 @@ const AptitudeTest = () => {
         try {
           const u = JSON.parse(userStr);
           userId = u.id || u._id || null;
-        } catch(e) {}
+        } catch (e) { }
       }
       if (!userId || userId === "guest_unknown") {
         userId = localStorage.getItem('guestId');
@@ -95,7 +95,7 @@ const AptitudeTest = () => {
           <p className="text-xl mb-8 text-gray-300">
             You scored <span className="text-[#6366f1] font-bold text-4xl mx-2">{scoreData.score}</span> out of {scoreData.total}
           </p>
-          <button 
+          <button
             onClick={() => navigate('/assessments')}
             className="w-full py-4 rounded-xl font-semibold text-lg bg-[#6366f1] hover:opacity-90 transition-all shadow-lg active:scale-95"
           >
@@ -130,10 +130,10 @@ const AptitudeTest = () => {
         {currentQ && (
           <div className="bg-[#ffffff0a] border border-[#ffffff15] backdrop-blur-lg rounded-3xl p-6 md:p-10 shadow-2xl">
             <h2 className="text-xl md:text-2xl font-semibold mb-8 leading-relaxed">{currentQ.question}</h2>
-            
+
             <div className="space-y-4">
               {currentQ.options.map((option, idx) => (
-                <div 
+                <div
                   key={idx}
                   onClick={() => handleOptionSelect(option)}
                   className={`p-4 md:p-5 rounded-xl border cursor-pointer transition-all ${currentAnswer === option ? 'bg-[#6366f1] border-[#6366f1] text-white shadow-lg shadow-[#6366f1]/20' : 'bg-[#ffffff05] border-[#ffffff1a] hover:bg-[#ffffff10] text-gray-300'}`}
@@ -144,7 +144,7 @@ const AptitudeTest = () => {
             </div>
 
             <div className="mt-12 flex flex-col sm:flex-row justify-between gap-4">
-              <button 
+              <button
                 onClick={handlePrevious}
                 disabled={currentIndex === 0}
                 className={`flex-1 py-4 rounded-xl font-semibold text-lg transition-all ${currentIndex === 0 ? 'opacity-50 cursor-not-allowed bg-[#ffffff10] text-gray-500' : 'bg-[#ffffff15] hover:bg-[#ffffff25] text-white'}`}
@@ -153,14 +153,15 @@ const AptitudeTest = () => {
               </button>
 
               {currentIndex < questions.length - 1 ? (
-                <button 
+                <button
                   onClick={handleNext}
-                  className="flex-1 py-4 rounded-xl font-semibold text-lg bg-[#6366f1] hover:opacity-90 transition-all shadow-lg active:scale-95"
+                  disabled={!currentAnswer}
+                  className={` flex-1 py-4 rounded-xl font-semibold text-lg transition-all shadow-lg ${!currentAnswer ? 'opacity-50 cursor-not-allowed bg-[#ffffff10] text-gray-500' : 'bg-[#6366f1] hover:opacity-90 active:scale-95 text-white'}`}
                 >
                   Next
                 </button>
               ) : (
-                <button 
+                <button
                   onClick={handleSubmit}
                   disabled={answers.length < questions.length && questions.length > 0}
                   className={`flex-1 py-4 rounded-xl font-semibold text-lg transition-all shadow-lg ${answers.length < questions.length && questions.length > 0 ? 'opacity-50 cursor-not-allowed bg-[#ffffff10] text-gray-500' : 'bg-[#10b981] hover:bg-[#059669] text-white active:scale-95'}`}

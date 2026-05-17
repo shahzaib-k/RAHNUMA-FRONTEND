@@ -16,7 +16,8 @@ import AptitudeTest from '../Pages/AptitudeTest';
 import PersonalityTest from '../Pages/PersonalityTest';
 import AtsChecker from '../Pages/AtsChecker';
 import ResumeEditor from '../Pages/ResumeEditor';
-
+import TemplateSelection from '../Pages/TemplateSelection';
+import AdminPanel from '../Pages/AdminPanel';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -59,6 +60,9 @@ function App() {
     );
   }
 
+  const user = JSON.parse(localStorage.getItem('user'));
+  const isAdmin = isAuthenticated && user && user.role === 'admin';
+
   return (
     <>
       <div data-theme="dark" >
@@ -76,7 +80,9 @@ function App() {
           <Route path="/assessments/aptitude-test" element={isAuthenticated ? <AptitudeTest /> : <Navigate to="/login" />} />
           <Route path="/assessments/personality-test" element={isAuthenticated ? <PersonalityTest /> : <Navigate to="/login" />} />
           <Route path="/ats-checker" element={isAuthenticated ? <AtsChecker /> : <Navigate to="/login" />} />
+          <Route path="/select-template" element={isAuthenticated ? <TemplateSelection /> : <Navigate to="/login" />} />
           <Route path="/resume-editor" element={isAuthenticated ? <ResumeEditor /> : <Navigate to="/login" />} />
+          <Route path="/admin" element={isAdmin ? <AdminPanel /> : <Navigate to="/dashboard" />} />
 
         </Routes>
       </div>

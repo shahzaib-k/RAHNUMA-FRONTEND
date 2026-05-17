@@ -18,40 +18,14 @@ const ResumeBuilder = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleGenerate = async () => {
+  const handleNextStep = () => {
     if (!formData.name || !formData.skills || !formData.targetRole || !formData.education) {
       alert("Please fill in Name, Target Role, Education, and Skills at minimum.");
       return;
     }
 
-    try {
-      setLoading(true);
-      const token = Cookies.get('token');
-      
-      const res = await fetch('/api/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { 'Authorization': `Bearer ${token}` })
-        },
-        body: JSON.stringify({
-          ...formData,
-          skills: formData.skills.split(',').map(s => s.trim())
-        })
-      });
-
-      const data = await res.json();
-      if (res.ok && data.resumeData) {
-        navigate('/resume-editor', { state: { resumeData: data.resumeData, resumeId: data.resumeId } });
-      } else {
-        alert(data.error || 'Failed to generate resume');
-      }
-    } catch (error) {
-      console.error(error);
-      alert('Error generating resume');
-    } finally {
-      setLoading(false);
-    }
+    // Pass data to template selection instead of calling API directly
+    navigate('/select-template', { state: { formData } });
   };
 
   return (
@@ -133,11 +107,10 @@ const ResumeBuilder = () => {
 
           <div className="flex flex-col sm:flex-row gap-4">
             <button 
-              onClick={handleGenerate}
-              disabled={loading}
+              onClick={handleNextStep}
               className="cursor-pointer flex-1 py-4 rounded-xl bg-gradient-to-r from-[#6366f1] via-[#a855f7] to-[#d946ef] font-bold text-lg shadow-lg hover:opacity-90 disabled:opacity-50 transition-opacity active:scale-[0.99] transform"
             >
-              {loading ? "Generating Resume..." : "Generate Resume with AI"}
+              Continue to Templates
             </button>
             <button 
               onClick={() => navigate('/ats-checker')}
