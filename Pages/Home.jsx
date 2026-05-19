@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarChart3, Brain, FileText, User, Settings } from 'lucide-react';
+import { BarChart3, Brain, FileText, User } from 'lucide-react';
 
 const Home = () => {
   const menuItems = [
@@ -29,23 +29,6 @@ const Home = () => {
     }
   ];
 
-  const userStr = localStorage.getItem('user');
-  let isAdmin = false;
-  try {
-    if (userStr) {
-      const user = JSON.parse(userStr);
-      isAdmin = user?.role === 'admin';
-    }
-  } catch (e) {}
-
-  if (isAdmin) {
-    menuItems.push({
-      title: "Admin Panel",
-      description: "Manage question banks and system settings",
-      icon: <Settings className="w-8 h-8 text-yellow-400" />,
-      link: "/admin"
-    });
-  }
 
   return (
     <main className="min-h-screen bg-[linear-gradient(to_bottom_right,#1b1836,#321a54,#541c81,#321a54,#1b1836)] text-white font-sans">

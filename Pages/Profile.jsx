@@ -215,12 +215,21 @@ const Profile = () => {
             >
               View Detailed Results
             </button>
-            <button 
-              onClick={() => navigate('/resume-builder')}
-              className="cursor-pointer w-full text-left p-4 rounded-xl bg-pink-600/20 border border-pink-500/30 hover:bg-pink-600/30 transition-all text-pink-200"
-            >
-              Update Resume
-            </button>
+            {user?.role === 'admin' ? (
+              <button 
+                onClick={() => navigate('/admin')}
+                className="cursor-pointer w-full text-left p-4 rounded-xl bg-pink-600/20 border border-pink-500/30 hover:bg-pink-600/30 transition-all text-pink-200"
+              >
+                Admin Panel
+              </button>
+            ) : (
+              <button 
+                onClick={() => navigate('/resume-builder')}
+                className="cursor-pointer w-full text-left p-4 rounded-xl bg-pink-600/20 border border-pink-500/30 hover:bg-pink-600/30 transition-all text-pink-200"
+              >
+                Update Resume
+              </button>
+            )}
             <button
               onClick={() => setIsLogoutModalOpen(true)}
               className="cursor-pointer w-full text-left p-4 rounded-xl bg-red-600/20 border border-red-500/30 hover:bg-red-600/30 transition-all text-red-200 font-semibold"

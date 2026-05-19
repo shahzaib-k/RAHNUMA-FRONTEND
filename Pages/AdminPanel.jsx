@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Loader, Edit2, Trash2, Plus, X } from 'lucide-react';
+import { Loader, Edit2, Trash2, Plus, X, CheckCircle, XCircle, ToggleLeft, ToggleRight } from 'lucide-react';
 import Cookies from 'js-cookie';
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState('aptitude'); // 'aptitude' or 'personality'
   const [questions, setQuestions] = useState([]);
+  const [originalQuestions, setOriginalQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -33,7 +34,9 @@ const AdminPanel = () => {
       });
       if (!res.ok) throw new Error('Failed to fetch questions');
       const data = await res.json();
-      setQuestions(data);
+      const normalizedData = data.map(q => ({...q, isActive: q.isActive === false ? false : true}));
+      setQuestions(normalizedData);
+      setOriginalQuestions(JSON.parse(JSON.stringify(normalizedData)));
     } catch (err) {
       setError(err.message);
     } finally {
@@ -57,6 +60,54 @@ const AdminPanel = () => {
       setQuestions(questions.filter(q => (q._id || q.id) !== id));
     } catch (err) {
       alert(err.message);
+    }
+  };
+
+  const toggleActive = (q) => {
+    const id = q._id || q.id;
+    setQuestions(questions.map(item => {
+      if ((item._id || item.id) === id) {
+        return { ...item, isActive: item.isActive === false ? true : false };
+      }
+      return item;
+    }));
+  };
+
+  const hasUnsavedChanges = JSON.stringify(questions) !== JSON.stringify(originalQuestions);
+  const activeCount = questions.filter(q => q.isActive === true).length;
+
+  const handleSaveChanges = async () => {
+    if (activeCount !== 20) {
+      alert(`${activeTab === 'aptitude' ? 'Aptitude' : 'Personality'} test requires exactly 20 active questions! Currently active: ${activeCount}`);
+      return;
+    }
+
+    const modified = questions.filter((q) => {
+      const orig = originalQuestions.find(o => (o._id || o.id) === (q._id || q.id));
+      return orig && orig.isActive !== q.isActive;
+    });
+
+    try {
+      const token = Cookies.get('token');
+      await Promise.all(modified.map(q => {
+        const id = q._id || q.id;
+        const endpoint = activeTab === 'aptitude' 
+          ? `/api/cognitive-test/admin/questions/${id}` 
+          : `/api/personality/admin/questions/${id}`;
+        
+        return fetch(endpoint, {
+          method: 'PUT',
+          headers: { 
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}` 
+          },
+          body: JSON.stringify({ isActive: q.isActive })
+        });
+      }));
+
+      await fetchQuestions();
+    } catch (err) {
+      alert('Failed to save changes.');
     }
   };
 
@@ -205,12 +256,28 @@ const AdminPanel = () => {
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-white">Admin Panel - Question Banks</h1>
-          <button 
-            onClick={() => openModal()}
-            className="flex items-center bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded transition-colors"
-          >
-            <Plus className="w-5 h-5 mr-2" /> Add Question
-          </button>
+          <div className="flex items-center gap-4">
+            <span className={`text-sm font-bold ${activeCount === 20 ? 'text-green-400' : 'text-yellow-400'}`}>
+              Active: {activeCount}/20
+            </span>
+            {hasUnsavedChanges && (
+              <button 
+                onClick={handleSaveChanges}
+                className="flex items-center bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition-colors"
+                title={activeCount !== 20 ? "You must have exactly 20 active questions to save." : "Save changes"}
+              >
+                Save Changes
+              </button>
+            )}
+            <button 
+              onClick={() => openModal()}
+              disabled={hasUnsavedChanges}
+              className={`flex items-center text-white font-bold py-2 px-4 rounded transition-colors ${hasUnsavedChanges ? 'bg-purple-600/50 cursor-not-allowed' : 'bg-purple-600 hover:bg-purple-700'}`}
+              title={hasUnsavedChanges ? "Save or discard changes before adding" : ""}
+            >
+              <Plus className="w-5 h-5 mr-2" /> Add Question
+            </button>
+          </div>
         </div>
 
         {/* Tabs */}
@@ -245,6 +312,7 @@ const AdminPanel = () => {
                 <tr className="bg-purple-900/50 text-purple-200">
                   <th className="p-4 border-b border-purple-500/30">Question</th>
                   <th className="p-4 border-b border-purple-500/30 w-32">Type / Trait</th>
+                  <th className="p-4 border-b border-purple-500/30 w-24">Status</th>
                   <th className="p-4 border-b border-purple-500/30 w-32">Actions</th>
                 </tr>
               </thead>
@@ -258,11 +326,25 @@ const AdminPanel = () => {
                       </span>
                     </td>
                     <td className="p-4">
-                      <div className="flex space-x-3">
-                        <button onClick={() => openModal(q)} className="text-blue-400 hover:text-blue-300 transition-colors">
+                      {q.isActive === false ? (
+                        <span className="px-2 py-1 bg-gray-500/20 rounded-md text-xs text-gray-400 border border-gray-500/30 flex items-center justify-center gap-1 w-fit">
+                          <XCircle className="w-3 h-3" /> Inactive
+                        </span>
+                      ) : (
+                        <span className="px-2 py-1 bg-green-500/20 rounded-md text-xs text-green-400 border border-green-500/30 flex items-center justify-center gap-1 w-fit">
+                          <CheckCircle className="w-3 h-3" /> Active
+                        </span>
+                      )}
+                    </td>
+                    <td className="p-4">
+                      <div className="flex space-x-3 items-center">
+                        <button onClick={() => toggleActive(q)} className="text-gray-400 hover:text-white transition-colors" title={q.isActive === false ? "Activate Question" : "Deactivate Question"}>
+                          {q.isActive === false ? <ToggleLeft className="w-6 h-6 text-gray-500" /> : <ToggleRight className="w-6 h-6 text-green-400" />}
+                        </button>
+                        <button onClick={() => openModal(q)} className="text-blue-400 hover:text-blue-300 transition-colors" title="Edit Question">
                           <Edit2 className="w-5 h-5" />
                         </button>
-                        <button onClick={() => handleDelete(q._id || q.id)} className="text-red-400 hover:text-red-300 transition-colors">
+                        <button onClick={() => handleDelete(q._id || q.id)} className="text-red-400 hover:text-red-300 transition-colors" title="Delete Question">
                           <Trash2 className="w-5 h-5" />
                         </button>
                       </div>
@@ -271,7 +353,7 @@ const AdminPanel = () => {
                 ))}
                 {questions.length === 0 && (
                   <tr>
-                    <td colSpan="3" className="p-8 text-center text-gray-500">No questions found in this category.</td>
+                    <td colSpan="4" className="p-8 text-center text-gray-500">No questions found in this category.</td>
                   </tr>
                 )}
               </tbody>
