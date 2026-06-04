@@ -28,7 +28,7 @@ function App() {
       const token = Cookies.get('token');
       if (token) {
         try {
-          const res = await fetch('/auth/check', {
+          const res = await fetch('https://rahnuma-backend.vercel.app/auth/check', {
             headers: { Authorization: `Bearer ${token}` }
           });
           const data = await res.json();
