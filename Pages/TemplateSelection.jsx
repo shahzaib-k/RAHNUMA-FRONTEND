@@ -46,7 +46,7 @@ const TemplateSelection = () => {
       setLoading(true);
       const token = Cookies.get('token');
       
-      const res = await fetch('/api/generate', {
+      const res = await fetch('https://rahnuma-backend.vercel.app/api/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

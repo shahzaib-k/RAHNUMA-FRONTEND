@@ -10,8 +10,14 @@ export default defineConfig({
   ],
   server: {
     proxy: {
-      '/auth': 'http://localhost:5000',
-      '/api': 'http://localhost:5000'
+      '/auth': {
+        target: 'https://rahnuma-backend.vercel.app',
+        changeOrigin: true
+      },
+      '/api': {
+        target: 'https://rahnuma-backend.vercel.app',
+        changeOrigin: true
+      }
     }
   }
 })

@@ -10,7 +10,7 @@ const AptitudeTest = () => {
   const [scoreData, setScoreData] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/cognitive-test/questions")
+    fetch("https://rahnuma-backend.vercel.app/api/cognitive-test/questions")
       .then(res => res.json())
       .then(data => {
         setQuestions(data);
@@ -67,7 +67,7 @@ const AptitudeTest = () => {
         }
       }
 
-      const res = await fetch("http://localhost:5000/api/cognitive-test/submit", {
+      const res = await fetch("https://rahnuma-backend.vercel.app/api/cognitive-test/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, answers })

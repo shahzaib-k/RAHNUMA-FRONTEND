@@ -26,8 +26,8 @@ const AdminPanel = () => {
     try {
       const token = Cookies.get('token');
       const endpoint = activeTab === 'aptitude' 
-        ? '/api/cognitive-test/admin/questions' 
-        : '/api/personality/admin/questions';
+        ? 'https://rahnuma-backend.vercel.app/api/cognitive-test/admin/questions' 
+        : 'https://rahnuma-backend.vercel.app/api/personality/admin/questions';
         
       const res = await fetch(endpoint, {
         headers: { Authorization: `Bearer ${token}` }
@@ -49,8 +49,8 @@ const AdminPanel = () => {
     try {
       const token = Cookies.get('token');
       const endpoint = activeTab === 'aptitude' 
-        ? `/api/cognitive-test/admin/questions/${id}` 
-        : `/api/personality/admin/questions/${id}`;
+        ? `https://rahnuma-backend.vercel.app/api/cognitive-test/admin/questions/${id}` 
+        : `https://rahnuma-backend.vercel.app/api/personality/admin/questions/${id}`;
         
       const res = await fetch(endpoint, {
         method: 'DELETE',
@@ -92,8 +92,8 @@ const AdminPanel = () => {
       await Promise.all(modified.map(q => {
         const id = q._id || q.id;
         const endpoint = activeTab === 'aptitude' 
-          ? `/api/cognitive-test/admin/questions/${id}` 
-          : `/api/personality/admin/questions/${id}`;
+          ? `https://rahnuma-backend.vercel.app/api/cognitive-test/admin/questions/${id}` 
+          : `https://rahnuma-backend.vercel.app/api/personality/admin/questions/${id}`;
         
         return fetch(endpoint, {
           method: 'PUT',
@@ -138,8 +138,8 @@ const AdminPanel = () => {
       const isEdit = !!editingQuestion;
       
       const endpoint = activeTab === 'aptitude' 
-        ? (isEdit ? `/api/cognitive-test/admin/questions/${id}` : '/api/cognitive-test/admin/questions')
-        : (isEdit ? `/api/personality/admin/questions/${id}` : '/api/personality/admin/questions');
+        ? (isEdit ? `https://rahnuma-backend.vercel.app/api/cognitive-test/admin/questions/${id}` : 'https://rahnuma-backend.vercel.app/api/cognitive-test/admin/questions')
+        : (isEdit ? `https://rahnuma-backend.vercel.app/api/personality/admin/questions/${id}` : 'https://rahnuma-backend.vercel.app/api/personality/admin/questions');
         
       const res = await fetch(endpoint, {
         method: isEdit ? 'PUT' : 'POST',

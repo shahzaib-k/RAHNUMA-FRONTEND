@@ -32,8 +32,8 @@ const Dashboard = () => {
         }
 
         const [persRes, intelRes] = await Promise.all([
-          fetch(`http://localhost:5000/api/personality/result?userId=${userId}`).catch(() => null),
-          fetch(`http://localhost:5000/api/dashboard/intelligence/${userId}`).catch(() => null)
+          fetch(`https://rahnuma-backend.vercel.app/api/personality/result?userId=${userId}`).catch(() => null),
+          fetch(`https://rahnuma-backend.vercel.app/api/dashboard/intelligence/${userId}`).catch(() => null)
         ]);
 
         let hasPersonality = false;

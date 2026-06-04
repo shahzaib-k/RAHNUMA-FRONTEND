@@ -37,7 +37,7 @@ const ResumeEditor = () => {
       setLoadingAction(`${sectionKey}-${enhancementType}-${arrayIndex}`);
       const token = Cookies.get('token');
       
-      const res = await fetch('/api/enhance', {
+      const res = await fetch('https://rahnuma-backend.vercel.app/api/enhance', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

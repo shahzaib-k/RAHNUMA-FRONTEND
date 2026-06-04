@@ -35,7 +35,7 @@ const Profile = () => {
           return;
         }
 
-        const res = await fetch(`/api/dashboard/intelligence/${userId}`, {
+        const res = await fetch(`https://rahnuma-backend.vercel.app/api/dashboard/intelligence/${userId}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         
@@ -68,7 +68,7 @@ const Profile = () => {
           return;
         }
 
-        const res = await fetch('/api/ats/ats-score', {
+        const res = await fetch('https://rahnuma-backend.vercel.app/api/ats/ats-score', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -93,7 +93,7 @@ const Profile = () => {
 
   const handleLogout = async () => {
     try {
-      await fetch('/auth/logout', { method: 'POST' });
+      await fetch('https://rahnuma-backend.vercel.app/auth/logout', { method: 'POST' });
     } catch (err) {
       console.error("Logout failed:", err);
     }

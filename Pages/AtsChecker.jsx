@@ -22,7 +22,7 @@ const AtsChecker = () => {
       const formData = new FormData();
       formData.append('resume', file);
 
-      const response = await fetch('/api/ats/upload-resume', {
+      const response = await fetch('https://rahnuma-backend.vercel.app/api/ats/upload-resume', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`

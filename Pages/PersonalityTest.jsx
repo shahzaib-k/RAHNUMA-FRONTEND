@@ -10,7 +10,7 @@ const PersonalityTest = () => {
   const [results, setResults] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/personality/questions")
+    fetch("https://rahnuma-backend.vercel.app/api/personality/questions")
       .then(res => res.json())
       .then(data => {
         setQuestions(data);
@@ -67,7 +67,7 @@ const PersonalityTest = () => {
         }
       }
 
-      const res = await fetch("http://localhost:5000/api/personality/submit", {
+      const res = await fetch("https://rahnuma-backend.vercel.app/api/personality/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, answers })

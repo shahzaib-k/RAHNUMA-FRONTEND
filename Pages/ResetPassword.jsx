@@ -29,7 +29,7 @@ const ResetPassword = () => {
     setLoading(true);
 
     try {
-      const res = await fetch(`/auth/reset-password/${token}`, {
+      const res = await fetch(`https://rahnuma-backend.vercel.app/auth/reset-password/${token}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ newPassword })
